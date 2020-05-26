@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>test</title>
+</head>
+<body style="margin: auto">
+ <h1 style="text-align: center;">Sudoku</h1>
+ <div id="grille" style="margin: 0px 200px">
+ 	<div style="display: flex; justify-content: space-between; margin: 10px">
+ 		<button
+ 			id="generator" 
+ 			onclick="
+	 		this.disabled=true;
+	 		document.getElementById('verfication').disabled=false;
+ 			document.getElementById('solution').disabled=false;
+ 			drawGrid(pywebview.api.generate());"
+ 		>generate
+ 		</button>
+ 		<button 
+ 			id="verfication" 
+ 			onclick="pywebview.api.solve();verify();">
+ 			verify
+ 		</button>
+ 		<button
+ 		id="solution"
+ 		onclick="document.getElementById('generator').disabled=false;
+ 						document.getElementById('verfication').disabled=true;
+ 						this.disabled=true;
+ 						pywebview.api.solve();
+ 						drawGrid(pywebview.api.get_g())">Solve</button>
+ 	</div>
+ </div>
+ 
+</body>
+<script type="text/javascript" src="script.js"></script>
+</html>
