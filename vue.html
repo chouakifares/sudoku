@@ -9,6 +9,7 @@
  	<div style="display: flex; justify-content: space-between; margin: 10px">
  		<button
  			id="generator" 
+ 			style="font-size: 1.5em"
  			onclick="
 	 		this.disabled=true;
 	 		document.getElementById('verfication').disabled=false;
@@ -18,16 +19,18 @@
  		</button>
  		<button 
  			id="verfication" 
+ 			style="font-size: 1.5em"
  			onclick="pywebview.api.solve();verify();">
  			verify
  		</button>
  		<button
  		id="solution"
+ 		style="font-size: 1.5em"
  		onclick="document.getElementById('generator').disabled=false;
- 						document.getElementById('verfication').disabled=true;
- 						this.disabled=true;
- 						pywebview.api.solve();
- 						drawGrid(pywebview.api.get_g())">Solve</button>
+ 				document.getElementById('verfication').disabled=true;
+ 				this.disabled=true;
+ 				pywebview.api.solve();
+ 				drawGrid(pywebview.api.get_g())">Solve</button>
  	</div>
  </div>
  
