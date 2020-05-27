@@ -221,6 +221,11 @@ class Grid:
     def column(self, x, y):
         return [i[y - 1] for i in self.g]
 
+    def my_missing(self, *lists):
+        numbers = set([i+1 for i in range(self._cols)])
+        return list(numbers.difference(*lists))
+        # i could even do it in one line return(set([i+1 for i in range(self._cols)]).difference(*lists))
+
     def missing(*lists):
         numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         for current_l in lists[1:]:
