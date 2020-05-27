@@ -1,0 +1,6 @@
+# These are the requirements i used, i had to install these specific versions of PyQt5 and PyQtWebEngine#
+# I didn't use your requirments.txt at all, consider updating it
+PyQt5==5.14.0
+PyQt5-sip==12.7.2
+PyQtWebEngine==5.13.2
+pywebview==3.2
