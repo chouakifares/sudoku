@@ -24,7 +24,7 @@ class Grid:
         Like this you can define documentation for methoods.
         Explain what they do, & what the variables mean, in this way
         :param cols: I couldn't guess up to this point, below (in the code) i can indicate the expected type
-        :type cols: list
+        :type cols: int
         :param: g: the content of the grid i guess
         :type g: list
         """
@@ -56,7 +56,6 @@ class Grid:
                     return False
         return True
 
-    # method used to draw the grid if the script is executed on a console
     def solved(self):
         for i in self.g:
             for j in i:
@@ -65,13 +64,19 @@ class Grid:
         return True
 
     def draw_grid(self):
+        """
+        This method is used to draw the grid if the script is executed on a console
+        """
         for i in self.g:
+            # You can also replace this loop with print(" ".join(i))
+            # Or even the two loops with print("\n".join([i for i in self.g]))
             for j in i:
                 print(j, end=" ")
             print()
         print("\n\n\n\n")
 
     # copying the data in the grid to another list
+    # I'm not sure the *storage is used well, there are no pointers in python
     def store_grid_values(self, *storage):
         for storage_list in storage:
             storage_list.clear()
@@ -92,6 +97,7 @@ class Grid:
             self.g.append(temporary)
 
     # grid getter
+    # as it is right now, you don't need the getter since the attribute is set public
     def get_g(self):
         return self.g
 
@@ -100,6 +106,7 @@ class Grid:
 
     # not quite the right place for this method but I wasn't able to put this method in the controller file
     # I used it to generate a new grid each time the user clicks on generate to generate a new grid
+    # You could have a static method, or have this one called in the constructor
     def generate(self):
         self.fill_grid()
         self.strip_values(35)
