@@ -1,5 +1,5 @@
-#note that this scripts only solves sudoku grid that admit only one solution and doesn't care about those that don't
 from random import randint
+import time
 class Grid():
     #base constructor, 
     def __init__(self,cols=9,g=[]):
@@ -10,7 +10,19 @@ class Grid():
         else:
             self._cols=cols
             self.g=[[0 for i in range(self._cols)] for j in range(self._cols)]
+    def compare_to_grid(self,obj):
+        for i in range(len(self.g)):
+            for j in range(len(self.g[i])):
+                if self.g[i][j]!=obj[i][j]:
+                    return False
+        return True
     #method used to draw the grid if the script is executed on a console
+    def solved(self):
+        for i in self.g:
+            for j in i:
+                if not j:
+                    return False
+        return True
     def draw_grid(self):
         for i in self.g:
             for j in i:
@@ -44,7 +56,7 @@ class Grid():
     #I used it to generate a new grid each time the user clicks on generate to generate a new grid
     def generate(self):
         self.fill_grid()
-        self.strip_values(20)
+        self.strip_values(35)
         return self.g
     #the core method for filling the grid, we use this method for filling each square of the grid
     def fill_square(self,coord,count=9):
@@ -116,15 +128,12 @@ class Grid():
         copy_lvl=lvl
         g1,g2=list(),list()
         self.store_grid_values(g1,g2)
-        while(g1==self.g and lvl>0):
+        while(g1==self.g  and lvl>=0):
             self.get_grid_values(g2)
             self.mirror_strip((randint(1,9),randint(1,9)))
             self.store_grid_values(g2)
-            try:
-                self.solve()
-                lvl-=1
-            except RecursionError:
-                break
+            self.solve()
+            lvl-=1
         if lvl:
             self.get_grid_values(g1)
             self.strip_values(copy_lvl)
@@ -135,7 +144,6 @@ class Grid():
     def mirror_strip(self,coord):
         self.g[coord[0]-1][coord[1]-1]=0
         self.g[(self._cols-1)-(coord[0]-1)][(self._cols-1)-(coord[1]-1)]=0
-    #method that returns the square(list of elements that are in the square) to which a certain given point belongs
     def square(self,x,y):
         line=((x-1)//3)*3
         column=((y-1)//3)*3
@@ -144,10 +152,8 @@ class Grid():
             for j in range(column,column+3):
                  temporary.append(self.g[i][j])
         return temporary
-    #method that returns the line(list of elements that are in the line) to which a certain given point belongs
     def line(self,x,y):
         return [i for i in self.g[x-1]]
-    #method that returns the column(list of elements that are in the column) to which a certain given point belongs
     def column(self,x,y):
         return [i[y-1] for i in self.g]
     def missing(*lists):
@@ -159,33 +165,71 @@ class Grid():
                     nb.append(numbers[i])
             numbers=[i for i in numbers if i not in nb]
         return numbers
-    #the solver function , we operate in this function using the fact that each grid has only a unique solution
-    #following this reasoning we find that at each state of the grid there's at least one cell that can only have one value
-    #(if at a giben state of the grid there's no cell that accepts only one value, that means that this grid accepts more than one solution)
     def solve(self):
-        #we emplement this logic by loopinfg through the cells of the grid and looking for the ones that admit only one solution
-        for i in range(len(self.g)):
-            for j in range(len(self.g)):
+        copy=[]
+        self.store_grid_values(copy)
+        done=True
+        while(done):
+            done=False  
+            for i in range(len(self.g)):
+                for j in range(len(self.g)):
+                    if not self.g[i][j]:
+                        options=self.missing(self.line(i+1,j+1),self.column(i+1,j+1),self.square(i+1,j+1))
+                        if len(options)==1:
+                            self.g[i][j]=options[0]
+                            done=True
+            g1=Grid()
+            index=0
+            while(not g1.solved()):
+                self.solve_backtrack((0,0),index,g1)
+                index+=1
+            self.get_grid_values(g1.g)
+    def solve_backtrack(self,position,index,resptacle):
+        self.g[position[0]][position[1]]=0
+        if len(self.missing(self.line(position[0]+1,position[1]+1),self.column(position[0]+1,position[1]+1),self.square(position[0]+1,position[1]+1)))>0:
+            self.g[position[0]][position[1]]=self.missing(self.line(position[0]+1,position[1]+1),self.column(position[0]+1,position[1]+1),self.square(position[0]+1,position[1]+1))[index]
+            for i in range(len(self.g)):
+                for j in range(len(self.g)):
+                    if not self.g[i][j]:
+                        break
                 if not self.g[i][j]:
-                    options=self.missing(self.line(i+1,j+1),self.column(i+1,j+1),self.square(i+1,j+1))
-                    if len(options)==1:
-                        self.g[i][j]=options[0]
-        #after that , we check if the grid still contains blank elements(0) , if so we call the solve function another time ,if not then we have a solved grid
-        for i in range(len(self.g)):
-            for j in range(len(self.g)):
-                if not self.g[i][j]:
-                    self.solve()
+                    break
+            new_position=(i,j)
+            if len(self.missing(self.line(new_position[0]+1,new_position[1]+1),self.column(new_position[0]+1,new_position[1]+1),self.square(new_position[0]+1,new_position[1]+1))):
+                for index in range(len(self.missing(self.line(new_position[0]+1,new_position[1]+1),self.column(new_position[0]+1,new_position[1]+1),self.square(new_position[0]+1,new_position[1]+1)))):
+                    self.solve_backtrack(new_position,index,resptacle)
+                    self.g[new_position[0]][new_position[1]]=0
+            if self.solved():
+                l=[]
+                self.store_grid_values(l)
+                resptacle.g=l
 if __name__=="__main__":
-    import pdb
-    while True:
-        pdb.set_trace()
-        g=Grid()
-        g.draw_grid()
-        print()
-        g.fill_grid()
-        print("\n\n\n\n\n\nstrip values")
-        g.strip_values(20)
-        g.draw_grid()
-        print("\n\n\n\n\n\nsovlved")
-        g.solve()
-        g.draw_grid()
+    g2=Grid(g=[[0,0,6,0,4,0,3,0,0],[7,8,3,0,0,0,1,4,5],[0,0,4,0,8,0,2,0,0],[0,0,0,1,0,2,0,0,0],[1,6,0,0,0,0,0,9,2],
+               [0,0,0,4,0,8,0,0,0],[0,0,1,0,5,0,9,0,0],[6,3,7,0,0,0,5,8,4],[0,0,9,0,7,0,6,0,0]])
+    g2.draw_grid()
+    print("\n\n\n\n\n\nsolved")
+    g1=Grid(g=[[0,0,6,0,4,0,3,0,0],[7,8,3,0,0,0,1,4,5],[0,0,4,0,8,0,2,0,0],[0,0,0,1,0,2,0,0,0],[1,6,0,0,0,0,0,9,2],
+        [0,0,0,4,0,8,0,0,0],[0,0,1,0,5,0,9,0,0],[6,3,7,0,0,0,5,8,4],[0,0,9,0,7,0,6,0,0]])
+    index=0
+    start=time.time()
+    while(not g1.solved()):
+        g2.solve_backtrack((0,0),index,g1)
+        index+=1
+    g1.draw_grid()
+    end=time.time()
+    print(end-start)
+    g2=Grid(g=[[0,0,6,0,4,0,3,0,0],[7,8,3,0,0,0,1,4,5],[0,0,4,0,8,0,2,0,0],[0,0,0,1,0,2,0,0,0],[1,6,0,0,0,0,0,9,2],
+               [0,0,0,4,0,8,0,0,0],[0,0,1,0,5,0,9,0,0],[6,3,7,0,0,0,5,8,4],[0,0,9,0,7,0,6,0,0]])
+    g2.draw_grid()
+    print("\n\n\n\n\n\nsolved")
+    start=time.time()
+    g2.solve()
+    end=time.time()
+    print(end-start)
+    g2.draw_grid()
+    g3=Grid()
+    g3.fill_grid()
+    g3.strip_values(28)
+    g3.draw_grid()
+    g3.solve()
+    g3.draw_grid()

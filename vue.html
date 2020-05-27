@@ -28,9 +28,8 @@
  		style="font-size: 1.5em"
  		onclick="document.getElementById('generator').disabled=false;
  				document.getElementById('verfication').disabled=true;
- 				this.disabled=true;
- 				pywebview.api.solve();
- 				drawGrid(pywebview.api.get_g())">Solve</button>
+ 				//this.disabled=true;
+ 				pywebview.api.solve().then(drawGrid(pywebview.api.get_g()))">Solve</button>
  	</div>
  </div>
  
