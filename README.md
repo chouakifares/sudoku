@@ -1,10 +1,8 @@
 # sudoku
 sudoku generator / solver using python ,pywebview,and JavaScript
 
-In a markdown file, you skip a line with two linebreaks
-
 Disclaimer:
-  This program only trats sudoku grids that admit a unique solution and generates sudoku grid that only admit one unique solution
+  This program only treats sudoku grids that admit a unique solution and generates sudoku grid that only admit one unique solution
 
 It would also be good to add instructions on how to use it
 
